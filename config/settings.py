@@ -2,11 +2,15 @@
 애플리케이션 설정 관리 모듈
 """
 import os
-from dotenv import load_dotenv
 import streamlit as st
 
-# 환경 변수 로드
-load_dotenv()
+# 환경 변수 로드 (로컬 환경에서만)
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    # Streamlit Cloud에서는 dotenv가 필요하지 않음
+    pass
 
 def get_env_var(key: str, default: str = None):
     """환경변수 또는 Streamlit secrets에서 값 가져오기"""
