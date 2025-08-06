@@ -14,11 +14,21 @@ except ImportError:
 
 def get_env_var(key: str, default: str = None):
     """환경변수 또는 Streamlit secrets에서 값 가져오기"""
-    # Streamlit Cloud에서 실행 중인 경우 secrets 사용
-    if hasattr(st, 'secrets') and key in st.secrets:
-        return st.secrets[key]
-    # 로컬 환경에서는 환경변수 사용
-    return os.getenv(key, default)
+    # 먼저 환경변수에서 확인 (로컬 환경 우선)
+    env_value = os.getenv(key)
+    if env_value is not None:
+        return env_value
+    
+    # 환경변수가 없으면 Streamlit secrets 확인 (Streamlit Cloud용)
+    try:
+        if hasattr(st, 'secrets') and key in st.secrets:
+            return st.secrets[key]
+    except Exception:
+        # secrets 파일이 없거나 오류가 발생하면 무시
+        pass
+    
+    # 둘 다 없으면 기본값 반환
+    return default
 
 class Config:
     """애플리케이션 설정 클래스"""

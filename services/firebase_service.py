@@ -58,15 +58,19 @@ class FirebaseService:
             self.db = None
     
     def _is_streamlit_cloud(self) -> bool:
-        """Streamlit Cloud에서 실행 중인지 확인"""
-        import streamlit as st
-        return hasattr(st, 'secrets') and 'firebase_credentials' in st.secrets
+        """스트림릿 클라우드에서 실행 중인지 확인"""
+        try:
+            import streamlit as st
+            return hasattr(st, 'secrets') and 'firebase_credentials' in st.secrets
+        except Exception:
+            # secrets 파일이 없거나 오류가 발생하면 로컬 환경으로 간주
+            return False
     
     def _get_firebase_credentials_from_secrets(self) -> dict:
         """Streamlit secrets에서 Firebase 자격 증명 가져오기"""
         try:
             import streamlit as st
-            if 'firebase_credentials' in st.secrets:
+            if hasattr(st, 'secrets') and 'firebase_credentials' in st.secrets:
                 return dict(st.secrets['firebase_credentials'])
         except Exception as e:
             print(f"Streamlit secrets에서 Firebase 자격 증명 로드 중 오류: {str(e)}")

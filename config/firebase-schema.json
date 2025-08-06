@@ -1,306 +1,336 @@
 {
   "database_info": {
-    "name": "New Flower Business Database",
-    "description": "비즈니스 데이터 분석을 위한 Firestore 데이터베이스",
-    "version": "1.0",
-    "last_updated": "2025-08-06"
+    "name": "FODI Dance Database",
+    "description": "댄스 동선표 및 사용자 관리 시스템을 위한 Firestore 데이터베이스",
+    "version": "2.0",
+    "last_updated": "2025-01-01"
   },
   "collections": {
-    "users": {
-      "description": "사용자/회원 정보",
+    "User_V2": {
+      "description": "앱 사용자 프로필/동의 상태와 가입·활성 시각을 보관하는 기준 컬렉션",
       "document_structure": {
-        "id": {
+        "documentId": {
           "type": "string",
-          "description": "자동 생성되는 문서 ID",
+          "description": "Firestore 문서 ID (=userId). 조인/출력 시 userId 사용",
           "example": "user_12345",
           "required": true
         },
-        "name": {
+        "createdAt": {
+          "type": "timestamp",
+          "description": "가입 시각(Asia/Seoul 권장)",
+          "example": "2025-01-01T10:30:00Z",
+          "required": true
+        },
+        "lastActiveAt": {
+          "type": "timestamp",
+          "description": "마지막 접속 시각",
+          "example": "2025-01-01T14:20:00Z",
+          "required": false
+        },
+        "provider": {
           "type": "string",
-          "description": "사용자 이름",
-          "example": "김철수",
+          "description": "인증 공급자",
+          "example": "APPLE",
+          "options": ["APPLE", "GOOGLE", "KAKAO"],
           "required": true
         },
         "email": {
           "type": "string",
-          "description": "이메일 주소",
-          "example": "kim@example.com",
-          "required": true
-        },
-        "created_at": {
-          "type": "timestamp",
-          "description": "가입일시",
-          "example": "2025-08-06T10:30:00Z",
-          "required": true
-        },
-        "last_active": {
-          "type": "timestamp",
-          "description": "마지막 활동일시",
-          "example": "2025-08-06T14:20:00Z",
+          "description": "이메일(PII, 기본 비노출)",
+          "example": "user@example.com",
           "required": false
         },
-        "status": {
+        "nickname": {
           "type": "string",
-          "description": "계정 상태",
-          "example": "active",
-          "options": ["active", "inactive", "suspended"],
-          "required": true
-        },
-        "age": {
-          "type": "number",
-          "description": "나이",
-          "example": 28,
+          "description": "닉네임",
+          "example": "댄서123",
           "required": false
         },
-        "location": {
+        "gender": {
           "type": "string",
-          "description": "거주 지역",
-          "example": "서울",
+          "description": "성별 코드",
+          "example": "M",
+          "options": ["M", "F", "O"],
           "required": false
         },
-        "subscription_type": {
-          "type": "string",
-          "description": "구독 유형",
-          "example": "premium",
-          "options": ["free", "basic", "premium"],
+        "eventNotificationAgree": {
+          "type": "boolean",
+          "description": "이벤트 알림 동의",
+          "example": true,
           "required": false
-        }
-      },
-      "indexes": ["created_at", "status", "location"],
-      "common_queries": [
-        "오늘 가입한 사용자 수",
-        "활성 사용자 수",
-        "지역별 사용자 분포",
-        "구독 유형별 사용자 수"
-      ]
-    },
-    "orders": {
-      "description": "주문/구매 정보",
-      "document_structure": {
-        "id": {
-          "type": "string",
-          "description": "자동 생성되는 주문 ID",
-          "example": "order_67890",
+        },
+        "pushNotificationAgree": {
+          "type": "boolean",
+          "description": "푸시 동의",
+          "example": true,
+          "required": false
+        },
+        "shareNotificationAgree": {
+          "type": "boolean",
+          "description": "공유 알림 동의",
+          "example": false,
+          "required": false
+        },
+        "marketingAgree": {
+          "type": "boolean",
+          "description": "마케팅 동의",
+          "example": true,
+          "required": false
+        },
+        "privacyAgree": {
+          "type": "boolean",
+          "description": "개인정보 동의",
+          "example": true,
           "required": true
         },
-        "user_id": {
-          "type": "string",
-          "description": "주문한 사용자 ID",
-          "example": "user_12345",
+        "termsAgree": {
+          "type": "boolean",
+          "description": "약관 동의",
+          "example": true,
           "required": true
         },
-        "amount": {
-          "type": "number",
-          "description": "주문 총 금액 (원)",
-          "example": 125000,
-          "required": true
-        },
-        "status": {
-          "type": "string",
-          "description": "주문 상태",
-          "example": "completed",
-          "options": ["pending", "processing", "completed", "cancelled", "refunded"],
-          "required": true
-        },
-        "created_at": {
-          "type": "timestamp",
-          "description": "주문일시",
-          "example": "2025-08-06T11:15:00Z",
-          "required": true
-        },
-        "product_ids": {
+        "teams": {
           "type": "array",
-          "description": "주문한 상품 ID 목록",
-          "example": ["prod_001", "prod_002"],
-          "required": true
-        },
-        "payment_method": {
-          "type": "string",
-          "description": "결제 방법",
-          "example": "card",
-          "options": ["card", "bank_transfer", "mobile", "cash"],
-          "required": true
-        },
-        "shipping_address": {
-          "type": "object",
-          "description": "배송 주소",
-          "example": {
-            "city": "서울",
-            "district": "강남구",
-            "address": "테헤란로 123"
-          },
-          "required": false
-        },
-        "discount_amount": {
-          "type": "number",
-          "description": "할인 금액 (원)",
-          "example": 5000,
+          "description": "소속 팀(중첩)",
+          "example": [{"teamId": "team_001", "role": "member"}],
           "required": false
         }
       },
-      "indexes": ["created_at", "status", "user_id", "amount"],
+      "indexes": ["createdAt", "lastActiveAt", "provider", "gender"],
       "common_queries": [
-        "오늘/이번 주/이번 달 매출",
-        "평균 주문 금액",
-        "결제 방법별 통계",
-        "주문 상태별 분포",
-        "사용자별 주문 내역"
+        "신규 가입자 수 (일/주/월)",
+        "활성 사용자 수",
+        "인증 공급자별 사용자 분포",
+        "성별 사용자 분포",
+        "동의 상태별 사용자 수"
       ]
     },
-    "products": {
-      "description": "상품/제품 정보",
+    "PREMIUM_PERFORMANCE_V2": {
+      "description": "스토어에서 판매 중인 프리미엄 동선표의 메타데이터와 상태를 담는 컬렉션",
       "document_structure": {
-        "id": {
+        "documentId": {
           "type": "string",
-          "description": "자동 생성되는 상품 ID",
-          "example": "prod_001",
+          "description": "Firestore 문서 ID (=premiumPerformanceId). 출력 시 별칭 사용",
+          "example": "pp_001",
           "required": true
         },
-        "name": {
+        "title": {
           "type": "string",
-          "description": "상품명",
-          "example": "프리미엄 노트북",
+          "description": "노래 제목",
+          "example": "Dynamite",
+          "required": true
+        },
+        "artist": {
+          "type": "string",
+          "description": "아티스트",
+          "example": "BTS",
+          "required": true
+        },
+        "headCount": {
+          "type": "number",
+          "description": "인원수",
+          "example": 7,
+          "required": true
+        },
+        "isOfficial": {
+          "type": "boolean",
+          "description": "공식 동선 여부",
+          "example": true,
+          "required": true
+        },
+        "isCompleted": {
+          "type": "boolean",
+          "description": "제작 완료 여부",
+          "example": true,
+          "required": true
+        },
+        "isBoyGroup": {
+          "type": "boolean",
+          "description": "보이그룹 여부",
+          "example": true,
           "required": true
         },
         "price": {
           "type": "number",
-          "description": "상품 가격 (원)",
-          "example": 1200000,
+          "description": "판매가",
+          "example": 15000,
           "required": true
         },
-        "stock": {
+        "musicId": {
           "type": "number",
-          "description": "재고 수량",
-          "example": 15,
+          "description": "내부 곡 ID",
+          "example": 1001,
           "required": true
         },
-        "category": {
+        "members": {
+          "type": "array",
+          "description": "멤버 배열",
+          "example": [{"name": "RM", "position": "center"}],
+          "required": true
+        },
+        "formations": {
+          "type": "array",
+          "description": "동선 배열",
+          "example": [{"time": 0, "positions": [{"x": 0, "y": 0}]}],
+          "required": true
+        },
+        "distributedFormations": {
+          "type": "array",
+          "description": "배포 동선 배열",
+          "example": [{"time": 0, "positions": [{"x": 0, "y": 0}]}],
+          "required": false
+        },
+        "author": {
           "type": "string",
-          "description": "상품 카테고리",
-          "example": "전자제품",
-          "options": ["전자제품", "컴퓨터", "액세서리", "스마트기기", "게이밍", "가전제품"],
+          "description": "작성자/관리자명",
+          "example": "관리자",
           "required": true
         },
-        "sales_count": {
-          "type": "number",
-          "description": "총 판매 수량",
-          "example": 156,
-          "required": true
-        },
-        "created_at": {
+        "createdAt": {
           "type": "timestamp",
-          "description": "상품 등록일",
-          "example": "2025-01-15T09:00:00Z",
+          "description": "생성 시각",
+          "example": "2025-01-01T09:00:00Z",
           "required": true
         },
-        "rating": {
-          "type": "number",
-          "description": "평균 평점 (1-5)",
-          "example": 4.5,
-          "required": false
-        },
-        "description": {
-          "type": "string",
-          "description": "상품 설명",
-          "example": "고성능 프리미엄 노트북",
-          "required": false
-        },
-        "brand": {
-          "type": "string",
-          "description": "브랜드명",
-          "example": "TechBrand",
-          "required": false
-        },
-        "is_active": {
-          "type": "boolean",
-          "description": "판매 활성 상태",
-          "example": true,
-          "required": true
-        }
-      },
-      "indexes": ["category", "price", "stock", "sales_count", "rating"],
-      "common_queries": [
-        "인기 상품 TOP N",
-        "재고 부족 상품 (stock < 10)",
-        "카테고리별 상품 수",
-        "가격대별 상품 분포",
-        "평점 높은 상품",
-        "브랜드별 상품 수"
-      ]
-    },
-    "user_queries": {
-      "description": "사용자 질문 및 AI 응답 로그",
-      "document_structure": {
-        "id": {
-          "type": "string",
-          "description": "자동 생성되는 로그 ID",
-          "example": "query_789",
+        "updatedAt": {
+          "type": "timestamp",
+          "description": "수정 시각",
+          "example": "2025-01-01T15:30:00Z",
           "required": true
         },
-        "user_id": {
+        "lastActivatedAt": {
+          "type": "timestamp",
+          "description": "최근 공개/활성화 시각",
+          "example": "2025-01-01T16:00:00Z",
+          "required": false
+        },
+        "createdUserId": {
           "type": "string",
-          "description": "질문한 사용자 ID",
+          "description": "생성 유저(=User_V2.userId)",
           "example": "user_12345",
           "required": true
         },
-        "query": {
+        "lastActivatedUserId": {
           "type": "string",
-          "description": "사용자 질문",
-          "example": "오늘 매출이 얼마야?",
-          "required": true
-        },
-        "response": {
-          "type": "string",
-          "description": "AI 응답",
-          "example": "오늘 매출은 250만원입니다.",
-          "required": true
-        },
-        "timestamp": {
-          "type": "timestamp",
-          "description": "질문 시간",
-          "example": "2025-08-06T14:30:00Z",
-          "required": true
-        },
-        "query_type": {
-          "type": "string",
-          "description": "질문 유형",
-          "example": "sales",
-          "options": ["users", "sales", "products", "general", "analytics"],
-          "required": false
-        },
-        "execution_time": {
-          "type": "number",
-          "description": "응답 생성 시간 (초)",
-          "example": 2.5,
+          "description": "최근 활성화 유저(=User_V2.userId)",
+          "example": "user_12345",
           "required": false
         }
       },
-      "indexes": ["timestamp", "user_id", "query_type"],
+      "indexes": ["createdAt", "price", "isOfficial", "isCompleted", "isBoyGroup", "headCount"],
       "common_queries": [
-        "사용자별 질문 내역",
-        "질문 유형별 통계",
-        "응답 시간 분석"
+        "프리미엄 동선표 총 개수",
+        "가격대별 동선표 분포",
+        "공식/비공식 동선표 비율",
+        "완료된 동선표 수",
+        "보이그룹/걸그룹 동선표 분포",
+        "인원수별 동선표 분포"
+      ]
+    },
+    "PERFORMANCE_V2": {
+      "description": "유저가 생성한(UGC) 동선표의 메타데이터를 담는 컬렉션",
+      "document_structure": {
+        "documentId": {
+          "type": "string",
+          "description": "Firestore 문서 ID (=performanceId). 출력 시 별칭 사용",
+          "example": "perf_001",
+          "required": true
+        },
+        "title": {
+          "type": "string",
+          "description": "작품 제목",
+          "example": "Butter",
+          "required": true
+        },
+        "artist": {
+          "type": "string",
+          "description": "아티스트",
+          "example": "BTS",
+          "required": true
+        },
+        "headCount": {
+          "type": "number",
+          "description": "인원수",
+          "example": 5,
+          "required": true
+        },
+        "isCompleted": {
+          "type": "boolean",
+          "description": "제작 완료 여부",
+          "example": false,
+          "required": true
+        },
+        "members": {
+          "type": "array",
+          "description": "멤버 배열",
+          "example": [{"name": "Member1", "position": "center"}],
+          "required": true
+        },
+        "formations": {
+          "type": "array",
+          "description": "동선 배열",
+          "example": [{"time": 0, "positions": [{"x": 0, "y": 0}]}],
+          "required": true
+        },
+        "musicId": {
+          "type": "number",
+          "description": "내부 곡 ID",
+          "example": 1002,
+          "required": true
+        },
+        "author": {
+          "type": "string",
+          "description": "작성자명",
+          "example": "댄서123",
+          "required": true
+        },
+        "createdAt": {
+          "type": "timestamp",
+          "description": "생성 시각",
+          "example": "2025-01-01T10:00:00Z",
+          "required": true
+        },
+        "updatedAt": {
+          "type": "timestamp",
+          "description": "수정 시각",
+          "example": "2025-01-01T14:00:00Z",
+          "required": true
+        },
+        "createdUserId": {
+          "type": "string",
+          "description": "생성 유저(=User_V2.userId)",
+          "example": "user_12345",
+          "required": true
+        }
+      },
+      "indexes": ["createdAt", "isCompleted", "headCount", "createdUserId"],
+      "common_queries": [
+        "UGC 동선표 총 개수",
+        "완료된/미완료 동선표 비율",
+        "사용자별 생성 동선표 수",
+        "인원수별 동선표 분포",
+        "최근 생성된 동선표"
       ]
     }
   },
   "query_patterns": {
     "time_filters": {
-      "today": "created_at >= today_start",
-      "this_week": "created_at >= week_start",
-      "this_month": "created_at >= month_start",
-      "last_7_days": "created_at >= 7_days_ago"
+      "today": "createdAt >= today_start",
+      "this_week": "createdAt >= week_start",
+      "this_month": "createdAt >= month_start",
+      "last_7_days": "createdAt >= 7_days_ago"
     },
     "aggregation_examples": {
-      "count_users": "get_aggregated_data('users', 'count')",
-      "sum_sales": "get_aggregated_data('orders', 'sum', 'amount')",
-      "avg_order": "get_aggregated_data('orders', 'avg', 'amount')",
-      "max_price": "get_aggregated_data('products', 'max', 'price')"
+      "count_users": "get_aggregated_data('User_V2', 'count')",
+      "count_premium_performances": "get_aggregated_data('PREMIUM_PERFORMANCE_V2', 'count')",
+      "count_ugc_performances": "get_aggregated_data('PERFORMANCE_V2', 'count')",
+      "avg_price": "get_aggregated_data('PREMIUM_PERFORMANCE_V2', 'avg', 'price')"
     },
     "common_filters": {
-      "active_users": "[{'field': 'status', 'operator': '==', 'value': 'active'}]",
-      "completed_orders": "[{'field': 'status', 'operator': '==', 'value': 'completed'}]",
-      "low_stock": "[{'field': 'stock', 'operator': '<', 'value': 10}]",
-      "high_rating": "[{'field': 'rating', 'operator': '>=', 'value': 4.0}]"
+      "active_users": "[{'field': 'lastActiveAt', 'operator': '>=', 'value': '7_days_ago'}]",
+      "completed_premium_performances": "[{'field': 'isCompleted', 'operator': '==', 'value': true}]",
+      "official_performances": "[{'field': 'isOfficial', 'operator': '==', 'value': true}]",
+      "boy_group_performances": "[{'field': 'isBoyGroup', 'operator': '==', 'value': true}]"
     }
   },
   "business_metrics": {
@@ -308,22 +338,24 @@
       "총 사용자 수",
       "신규 가입자 수 (일/주/월)",
       "활성 사용자 수",
-      "지역별 사용자 분포",
-      "구독 유형별 분포"
+      "인증 공급자별 사용자 분포",
+      "성별 사용자 분포",
+      "동의 상태별 사용자 수"
     ],
-    "sales_metrics": [
-      "총 매출",
-      "기간별 매출 (일/주/월)",
-      "평균 주문 금액",
-      "주문 수",
-      "결제 방법별 통계"
+    "premium_performance_metrics": [
+      "총 프리미엄 동선표 수",
+      "완료된 프리미엄 동선표 수",
+      "공식/비공식 동선표 비율",
+      "가격대별 동선표 분포",
+      "보이그룹/걸그룹 동선표 분포",
+      "인원수별 동선표 분포"
     ],
-    "product_metrics": [
-      "총 상품 수",
-      "인기 상품 순위",
-      "재고 부족 상품",
-      "카테고리별 판매량",
-      "평점별 상품 분포"
+    "ugc_performance_metrics": [
+      "총 UGC 동선표 수",
+      "완료된 UGC 동선표 수",
+      "사용자별 생성 동선표 수",
+      "인원수별 동선표 분포",
+      "최근 생성된 동선표 추이"
     ]
   }
 }
