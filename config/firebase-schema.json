@@ -1,0 +1,329 @@
+{
+  "database_info": {
+    "name": "New Flower Business Database",
+    "description": "비즈니스 데이터 분석을 위한 Firestore 데이터베이스",
+    "version": "1.0",
+    "last_updated": "2025-08-06"
+  },
+  "collections": {
+    "users": {
+      "description": "사용자/회원 정보",
+      "document_structure": {
+        "id": {
+          "type": "string",
+          "description": "자동 생성되는 문서 ID",
+          "example": "user_12345",
+          "required": true
+        },
+        "name": {
+          "type": "string",
+          "description": "사용자 이름",
+          "example": "김철수",
+          "required": true
+        },
+        "email": {
+          "type": "string",
+          "description": "이메일 주소",
+          "example": "kim@example.com",
+          "required": true
+        },
+        "created_at": {
+          "type": "timestamp",
+          "description": "가입일시",
+          "example": "2025-08-06T10:30:00Z",
+          "required": true
+        },
+        "last_active": {
+          "type": "timestamp",
+          "description": "마지막 활동일시",
+          "example": "2025-08-06T14:20:00Z",
+          "required": false
+        },
+        "status": {
+          "type": "string",
+          "description": "계정 상태",
+          "example": "active",
+          "options": ["active", "inactive", "suspended"],
+          "required": true
+        },
+        "age": {
+          "type": "number",
+          "description": "나이",
+          "example": 28,
+          "required": false
+        },
+        "location": {
+          "type": "string",
+          "description": "거주 지역",
+          "example": "서울",
+          "required": false
+        },
+        "subscription_type": {
+          "type": "string",
+          "description": "구독 유형",
+          "example": "premium",
+          "options": ["free", "basic", "premium"],
+          "required": false
+        }
+      },
+      "indexes": ["created_at", "status", "location"],
+      "common_queries": [
+        "오늘 가입한 사용자 수",
+        "활성 사용자 수",
+        "지역별 사용자 분포",
+        "구독 유형별 사용자 수"
+      ]
+    },
+    "orders": {
+      "description": "주문/구매 정보",
+      "document_structure": {
+        "id": {
+          "type": "string",
+          "description": "자동 생성되는 주문 ID",
+          "example": "order_67890",
+          "required": true
+        },
+        "user_id": {
+          "type": "string",
+          "description": "주문한 사용자 ID",
+          "example": "user_12345",
+          "required": true
+        },
+        "amount": {
+          "type": "number",
+          "description": "주문 총 금액 (원)",
+          "example": 125000,
+          "required": true
+        },
+        "status": {
+          "type": "string",
+          "description": "주문 상태",
+          "example": "completed",
+          "options": ["pending", "processing", "completed", "cancelled", "refunded"],
+          "required": true
+        },
+        "created_at": {
+          "type": "timestamp",
+          "description": "주문일시",
+          "example": "2025-08-06T11:15:00Z",
+          "required": true
+        },
+        "product_ids": {
+          "type": "array",
+          "description": "주문한 상품 ID 목록",
+          "example": ["prod_001", "prod_002"],
+          "required": true
+        },
+        "payment_method": {
+          "type": "string",
+          "description": "결제 방법",
+          "example": "card",
+          "options": ["card", "bank_transfer", "mobile", "cash"],
+          "required": true
+        },
+        "shipping_address": {
+          "type": "object",
+          "description": "배송 주소",
+          "example": {
+            "city": "서울",
+            "district": "강남구",
+            "address": "테헤란로 123"
+          },
+          "required": false
+        },
+        "discount_amount": {
+          "type": "number",
+          "description": "할인 금액 (원)",
+          "example": 5000,
+          "required": false
+        }
+      },
+      "indexes": ["created_at", "status", "user_id", "amount"],
+      "common_queries": [
+        "오늘/이번 주/이번 달 매출",
+        "평균 주문 금액",
+        "결제 방법별 통계",
+        "주문 상태별 분포",
+        "사용자별 주문 내역"
+      ]
+    },
+    "products": {
+      "description": "상품/제품 정보",
+      "document_structure": {
+        "id": {
+          "type": "string",
+          "description": "자동 생성되는 상품 ID",
+          "example": "prod_001",
+          "required": true
+        },
+        "name": {
+          "type": "string",
+          "description": "상품명",
+          "example": "프리미엄 노트북",
+          "required": true
+        },
+        "price": {
+          "type": "number",
+          "description": "상품 가격 (원)",
+          "example": 1200000,
+          "required": true
+        },
+        "stock": {
+          "type": "number",
+          "description": "재고 수량",
+          "example": 15,
+          "required": true
+        },
+        "category": {
+          "type": "string",
+          "description": "상품 카테고리",
+          "example": "전자제품",
+          "options": ["전자제품", "컴퓨터", "액세서리", "스마트기기", "게이밍", "가전제품"],
+          "required": true
+        },
+        "sales_count": {
+          "type": "number",
+          "description": "총 판매 수량",
+          "example": 156,
+          "required": true
+        },
+        "created_at": {
+          "type": "timestamp",
+          "description": "상품 등록일",
+          "example": "2025-01-15T09:00:00Z",
+          "required": true
+        },
+        "rating": {
+          "type": "number",
+          "description": "평균 평점 (1-5)",
+          "example": 4.5,
+          "required": false
+        },
+        "description": {
+          "type": "string",
+          "description": "상품 설명",
+          "example": "고성능 프리미엄 노트북",
+          "required": false
+        },
+        "brand": {
+          "type": "string",
+          "description": "브랜드명",
+          "example": "TechBrand",
+          "required": false
+        },
+        "is_active": {
+          "type": "boolean",
+          "description": "판매 활성 상태",
+          "example": true,
+          "required": true
+        }
+      },
+      "indexes": ["category", "price", "stock", "sales_count", "rating"],
+      "common_queries": [
+        "인기 상품 TOP N",
+        "재고 부족 상품 (stock < 10)",
+        "카테고리별 상품 수",
+        "가격대별 상품 분포",
+        "평점 높은 상품",
+        "브랜드별 상품 수"
+      ]
+    },
+    "user_queries": {
+      "description": "사용자 질문 및 AI 응답 로그",
+      "document_structure": {
+        "id": {
+          "type": "string",
+          "description": "자동 생성되는 로그 ID",
+          "example": "query_789",
+          "required": true
+        },
+        "user_id": {
+          "type": "string",
+          "description": "질문한 사용자 ID",
+          "example": "user_12345",
+          "required": true
+        },
+        "query": {
+          "type": "string",
+          "description": "사용자 질문",
+          "example": "오늘 매출이 얼마야?",
+          "required": true
+        },
+        "response": {
+          "type": "string",
+          "description": "AI 응답",
+          "example": "오늘 매출은 250만원입니다.",
+          "required": true
+        },
+        "timestamp": {
+          "type": "timestamp",
+          "description": "질문 시간",
+          "example": "2025-08-06T14:30:00Z",
+          "required": true
+        },
+        "query_type": {
+          "type": "string",
+          "description": "질문 유형",
+          "example": "sales",
+          "options": ["users", "sales", "products", "general", "analytics"],
+          "required": false
+        },
+        "execution_time": {
+          "type": "number",
+          "description": "응답 생성 시간 (초)",
+          "example": 2.5,
+          "required": false
+        }
+      },
+      "indexes": ["timestamp", "user_id", "query_type"],
+      "common_queries": [
+        "사용자별 질문 내역",
+        "질문 유형별 통계",
+        "응답 시간 분석"
+      ]
+    }
+  },
+  "query_patterns": {
+    "time_filters": {
+      "today": "created_at >= today_start",
+      "this_week": "created_at >= week_start",
+      "this_month": "created_at >= month_start",
+      "last_7_days": "created_at >= 7_days_ago"
+    },
+    "aggregation_examples": {
+      "count_users": "get_aggregated_data('users', 'count')",
+      "sum_sales": "get_aggregated_data('orders', 'sum', 'amount')",
+      "avg_order": "get_aggregated_data('orders', 'avg', 'amount')",
+      "max_price": "get_aggregated_data('products', 'max', 'price')"
+    },
+    "common_filters": {
+      "active_users": "[{'field': 'status', 'operator': '==', 'value': 'active'}]",
+      "completed_orders": "[{'field': 'status', 'operator': '==', 'value': 'completed'}]",
+      "low_stock": "[{'field': 'stock', 'operator': '<', 'value': 10}]",
+      "high_rating": "[{'field': 'rating', 'operator': '>=', 'value': 4.0}]"
+    }
+  },
+  "business_metrics": {
+    "user_metrics": [
+      "총 사용자 수",
+      "신규 가입자 수 (일/주/월)",
+      "활성 사용자 수",
+      "지역별 사용자 분포",
+      "구독 유형별 분포"
+    ],
+    "sales_metrics": [
+      "총 매출",
+      "기간별 매출 (일/주/월)",
+      "평균 주문 금액",
+      "주문 수",
+      "결제 방법별 통계"
+    ],
+    "product_metrics": [
+      "총 상품 수",
+      "인기 상품 순위",
+      "재고 부족 상품",
+      "카테고리별 판매량",
+      "평점별 상품 분포"
+    ]
+  }
+}

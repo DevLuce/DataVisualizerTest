@@ -528,8 +528,30 @@ class FirebaseService:
         """데이터베이스 스키마 정보 반환 (Gemini AI가 쿼리 생성 시 참고용)
         
         Returns:
-            각 컬렉션의 필드 정보와 예시 데이터
+            JSON 파일에서 로드한 상세한 스키마 정보
         """
+        try:
+            import json
+            import os
+            
+            # 스키마 파일 경로
+            schema_path = os.path.join(os.path.dirname(__file__), '..', 'config', 'firebase-schema.json')
+            
+            # JSON 파일 로드
+            if os.path.exists(schema_path):
+                with open(schema_path, 'r', encoding='utf-8') as f:
+                    schema_data = json.load(f)
+                return schema_data
+            else:
+                print(f"스키마 파일을 찾을 수 없습니다: {schema_path}")
+                return self._get_fallback_schema()
+                
+        except Exception as e:
+            print(f"스키마 로드 중 오류: {str(e)}")
+            return self._get_fallback_schema()
+    
+    def _get_fallback_schema(self) -> Dict[str, Any]:
+        """스키마 파일 로드 실패 시 기본 스키마 반환"""
         return {
             'collections': {
                 'users': {
@@ -543,8 +565,7 @@ class FirebaseService:
                         'status': 'string (active, inactive)',
                         'age': 'number (나이)',
                         'location': 'string (지역)'
-                    },
-                    'example_query': "오늘 가입한 사용자 수: filters=[{'field': 'created_at', 'operator': '>=', 'value': today}]"
+                    }
                 },
                 'orders': {
                     'description': '주문 정보',
@@ -556,8 +577,7 @@ class FirebaseService:
                         'created_at': 'timestamp (주문일)',
                         'product_ids': 'array (상품 ID 목록)',
                         'payment_method': 'string (결제 방법)'
-                    },
-                    'example_query': "이번 주 매출: filters=[{'field': 'created_at', 'operator': '>=', 'value': week_ago}], aggregation='sum', field='amount'"
+                    }
                 },
                 'products': {
                     'description': '상품 정보',
@@ -570,17 +590,11 @@ class FirebaseService:
                         'sales_count': 'number (판매 수량)',
                         'created_at': 'timestamp (등록일)',
                         'rating': 'number (평점)'
-                    },
-                    'example_query': "재고 부족 상품: filters=[{'field': 'stock', 'operator': '<', 'value': 10}]"
+                    }
                 }
             },
             'operators': ['==', '!=', '<', '<=', '>', '>=', 'in', 'not-in', 'array-contains'],
-            'aggregations': ['count', 'sum', 'avg', 'max', 'min'],
-            'usage_examples': [
-                "사용자 수 조회: execute_dynamic_query('users', aggregation_type='count')",
-                "오늘 매출: get_aggregated_data('orders', 'sum', 'amount', [{'field': 'created_at', 'operator': '>=', 'value': today}])",
-                "인기 상품 TOP 5: execute_dynamic_query('products', order_by='-sales_count', limit=5)"
-            ]
+            'aggregations': ['count', 'sum', 'avg', 'max', 'min']
         }
     
     def _get_mock_query_result(self, collection_name: str) -> List[Dict]:
